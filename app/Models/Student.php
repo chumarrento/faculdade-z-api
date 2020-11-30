@@ -26,6 +26,8 @@ class Student extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $with = ['course'];
+
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id', 'id');
