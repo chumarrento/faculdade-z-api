@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Models\Student;
 use App\Utils\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     use ApiResponse;
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $credentials = $request->only(['cpf', 'password']);
 
