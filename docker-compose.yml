@@ -1,0 +1,52 @@
+version: '3'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: postgrain-test-app
+    container_name: postgrain-test-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    depends_on:
+      - db
+    volumes:
+      - .:/var/www/html
+    networks:
+      - postgrain-test
+
+  db:
+    image: mysql
+    container_name: postgrain-test-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '${DB_PORT}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+    networks:
+      - postgrain-test
+    entrypoint: sh -c "
+      echo 'CREATE DATABASE IF NOT EXISTS postgrain_db_test;' > /docker-entrypoint-initdb.d/init.sql;
+      /usr/local/bin/docker-entrypoint.sh --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci"
+    command: mysqld --default-authentication-plugin=mysql_native_password
+
+  nginx:
+    image: nginx:alpine
+    container_name: postgrain-test-nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+      - db
+    ports:
+      - '80:80'
+    volumes:
+      - .:/var/www/html
+      - ./docker-compose/nginx:/etc/nginx/conf.d
+    networks:
+      - postgrain-test
+
+networks:
+  postgrain-test:
+    driver: bridge
