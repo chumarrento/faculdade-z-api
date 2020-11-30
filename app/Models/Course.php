@@ -13,4 +13,9 @@ class Course extends Model
         'name',
         'semesters'
     ];
+
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'course_id', 'id');
+    }
 }
