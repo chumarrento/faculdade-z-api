@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Course;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -23,5 +24,13 @@ class StudentTest extends TestCase
             'cpf' => $attributes['cpf'],
             'course_id' => $attributes['course_id']
         ]);
+    }
+
+    /** @test */
+    public function itBelongsToACourse()
+    {
+        $student = Student::factory()->create();
+
+        $this->assertInstanceOf(Course::class, $student->course);
     }
 }

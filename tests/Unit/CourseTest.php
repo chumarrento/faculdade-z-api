@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Course;
 use Database\Seeders\CourseTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class CourseTest extends TestCase
@@ -33,5 +34,13 @@ class CourseTest extends TestCase
             'name' => 'Sistemas de Informação',
             'semesters' => 8
         ]);
+    }
+
+    /** @test */
+    public function itHasStudents()
+    {
+        $course = Course::factory()->create();
+
+        $this->assertInstanceOf(Collection::class, $course->students);
     }
 }
