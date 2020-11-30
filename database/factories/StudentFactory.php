@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\Course;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class StudentFactory extends Factory
 {
@@ -28,7 +29,7 @@ class StudentFactory extends Factory
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'registration' => $this->faker->numberBetween(10000, 20000),
-            'cpf' => $this->faker->randomNumber(),
+            'cpf' => Str::random(11),
             'course_id' => Course::factory()
         ];
     }

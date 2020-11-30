@@ -21,7 +21,7 @@ class AuthenticationTest extends TestCase
     {
         $student = Student::factory()->create();
 
-        $response = $this->post('api/login', [
+        $response = $this->json('POST', 'api/login', [
             'cpf' => $student->cpf,
             'password' => 'password'
         ]);
@@ -40,5 +40,67 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function aStudentCannotLoginWithInvalidCredentials()
+    {
+        $student = Student::factory()->create();
+
+        $response = $this->json('POST', 'api/login', [
+            'cpf' => $student->cpf,
+            'password' => 'invalid_password'
+        ]);
+
+        $response->assertJson([
+            'message' => 'Login/Senha inválido',
+        ]);
+
+        $response->assertStatus(401);
+    }
+
+    /** @test */
+    public function aStudentRequiresACpf()
+    {
+        $this->json('POST', 'api/login', [
+            'cpf' => '',
+            'password' => 'valid_password'
+        ])->assertJsonValidationErrors('cpf');
+    }
+
+    /** @test */
+    public function aStudentRequiresAStringCpf()
+    {
+        $this->json('POST', 'api/login', [
+            'cpf' => 1234,
+            'password' => 'valid_password'
+        ])->assertJsonValidationErrors('cpf');
+    }
+
+    /** @test */
+    public function aStudentRequiresAValidCpfSize()
+    {
+        $this->json('POST', 'api/login', [
+            'cpf' => 'invalid_cpf_size',
+            'password' => 'valid_password'
+        ])->assertJsonValidationErrors('cpf');
+    }
+
+    /** @test */
+    public function aStudentRequiresAPassword()
+    {
+        $this->json('POST', 'api/login', [
+            'cpf' => 'any_cpf',
+            'password' => ''
+        ])->assertJsonValidationErrors('password');
+    }
+
+    /** @test */
+    public function aStudentRequiresAStringPassword()
+    {
+        $this->json('POST', 'api/login', [
+            'cpf' => 'any_cpf',
+            'password' => 1234
+        ])->assertJsonValidationErrors('password');
     }
 }
