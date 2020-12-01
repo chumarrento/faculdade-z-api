@@ -49,4 +49,9 @@ class Discipline extends Model
         ->withPivot(['status', 'final_grade'])
         ->withTimestamps();
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class, 'discipline_id', 'id');
+    }
 }
