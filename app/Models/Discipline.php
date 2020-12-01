@@ -54,4 +54,9 @@ class Discipline extends Model
     {
         return $this->hasMany(Schedule::class, 'discipline_id', 'id');
     }
+
+    public function addSchedule(array $scheduleAttributes): void
+    {
+        $this->schedules()->create($scheduleAttributes);
+    }
 }
