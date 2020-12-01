@@ -21,6 +21,7 @@ class CreateStudentsTable extends Migration
             $table->dateTime('email_verified_at')->nullable();
             $table->string('password');
             $table->string('registration');
+            $table->integer('current_semester')->default(1);
             $table->foreignId('course_id')->references('id')->on('courses');
             $table->timestamps();
         });

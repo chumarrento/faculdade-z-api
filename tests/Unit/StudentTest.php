@@ -14,7 +14,7 @@ class StudentTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function canCreateAUser()
+    public function canCreateAStudent()
     {
         $attributes = Student::factory()->raw();
         Student::create($attributes);
@@ -24,6 +24,7 @@ class StudentTest extends TestCase
             'email' => $attributes['email'],
             'registration' => $attributes['registration'],
             'cpf' => $attributes['cpf'],
+            'current_semester' => $attributes['current_semester'],
             'course_id' => $attributes['course_id']
         ]);
     }

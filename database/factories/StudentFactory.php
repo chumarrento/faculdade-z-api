@@ -29,6 +29,7 @@ class StudentFactory extends Factory
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'registration' => $this->faker->numberBetween(10000, 20000),
+            'current_semester' => $this->faker->randomNumber(),
             'cpf' => Str::random(11),
             'course_id' => Course::factory()
         ];

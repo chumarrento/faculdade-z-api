@@ -17,6 +17,7 @@ class Student extends Authenticatable
         'cpf',
         'email_verified_at',
         'registration',
+        'current_semester',
         'course_id'
     ];
 
