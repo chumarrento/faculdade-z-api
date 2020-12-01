@@ -24,4 +24,17 @@ class Discipline extends Model
     {
         return $this->belongsTo(Difficulty::class, 'difficulty_id', 'id');
     }
+
+    public function courses()
+    {
+        return $this->belongsToMany(
+            Course::class,
+            'courses_disciplines',
+            'discipline_id',
+            'course_id'
+        )
+        ->withPivot('semester')
+        ->withTimestamps();
+
+    }
 }
