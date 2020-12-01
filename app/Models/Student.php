@@ -44,4 +44,16 @@ class Student extends Authenticatable
         ->withPivot(['status', 'final_grade'])
         ->withTimestamps();
     }
+
+    public function supportContacts()
+    {
+        return $this->hasMany(Support::class, 'student_id', 'id');
+    }
+
+    public function addFeedback(string $message): void
+    {
+        $this->supportContacts()->create([
+            'message' => $message
+        ]);
+    }
 }
