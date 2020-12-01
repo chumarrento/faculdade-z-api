@@ -68,4 +68,41 @@ class StudentTest extends TestCase
             'student_id' => $student->id
         ]);
     }
+
+    /** @test */
+    public function itCanLoadCurrentSemesterInfo()
+    {
+        $course = Course::factory()
+            ->hasAttached(Discipline::factory()
+                ->hasSchedules(1)
+                ->hasTeacher(1)
+                ->count(2),
+                ['semester' => 1]
+            )
+            ->create();
+        $disciplines = $course->disciplines;
+
+        $student = Student::factory()->create(['course_id' => $course->id, 'current_semester' => 1]);
+        $student->disciplines()->sync($disciplines);
+
+        $currentSemesterInfo = $student->getCurrentSemesterInfo();
+
+        $expected = $disciplines->map(function ($discipline) {
+            $studentDisciplineInfo = $discipline->students->first();
+            return [
+                'discipline_name' => $discipline->name,
+                'discipline_difficulty' => $discipline->difficulty->name,
+                'discipline_teacher' => $discipline->teacher->name,
+                'discipline_schedule' => [
+                    'weekday' => $discipline->schedule->weekday,
+                    'start_time' => $discipline->schedule->start_time,
+                    'end_time' => $discipline->schedule->end_time,
+                ],
+                'status' => $studentDisciplineInfo->status,
+                'final_grade' => $studentDisciplineInfo->final_grade
+            ];
+        });
+
+        $this->assertEquals($expected, $currentSemesterInfo);
+    }
 }
