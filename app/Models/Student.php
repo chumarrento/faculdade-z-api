@@ -32,4 +32,16 @@ class Student extends Authenticatable
     {
         return $this->belongsTo(Course::class, 'course_id', 'id');
     }
+
+    public function disciplines()
+    {
+        return $this->belongsToMany(
+            Discipline::class,
+            'disciplines_students',
+            'student_id',
+            'discipline_id'
+        )
+        ->withPivot(['status', 'final_grade'])
+        ->withTimestamps();
+    }
 }

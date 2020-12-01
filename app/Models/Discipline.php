@@ -37,4 +37,16 @@ class Discipline extends Model
         ->withTimestamps();
 
     }
+
+    public function students()
+    {
+        return $this->belongsToMany(
+            Student::class,
+            'disciplines_students',
+            'discipline_id',
+            'student_id'
+        )
+        ->withPivot(['status', 'final_grade'])
+        ->withTimestamps();
+    }
 }
