@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Students\MeController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,3 +16,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::group(['prefix' => 'students'], function () {
+        Route::get('me/current-semester-info', [MeController::class, 'getCurrentSemesterInfo']);
+    });
+});

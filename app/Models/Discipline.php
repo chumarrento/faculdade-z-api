@@ -15,6 +15,9 @@ class Discipline extends Model
         'teacher_id'
     ];
 
+    protected $with = ['difficulty'];
+    protected $appends = ['schedule'];
+
     public function teacher()
     {
         return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
@@ -58,5 +61,10 @@ class Discipline extends Model
     public function addSchedule(array $scheduleAttributes): void
     {
         $this->schedules()->create($scheduleAttributes);
+    }
+
+    public function getScheduleAttribute()
+    {
+        return $this->schedules()->first();
     }
 }

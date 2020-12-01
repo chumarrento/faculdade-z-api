@@ -34,6 +34,11 @@ class Student extends Authenticatable
         return $this->belongsTo(Course::class, 'course_id', 'id');
     }
 
+    public function getCourseAttribute()
+    {
+        return $this->course()->getResults();
+    }
+
     public function disciplines()
     {
         return $this->belongsToMany(
@@ -42,8 +47,8 @@ class Student extends Authenticatable
             'student_id',
             'discipline_id'
         )
-        ->withPivot(['status', 'final_grade'])
-        ->withTimestamps();
+            ->withPivot(['status', 'final_grade'])
+            ->withTimestamps();
     }
 
     public function supportContacts()
@@ -56,5 +61,27 @@ class Student extends Authenticatable
         $this->supportContacts()->create([
             'message' => $message
         ]);
+    }
+
+    public function getCurrentSemesterInfo()
+    {
+        $disciplines = $this->course->disciplines()->wherePivot('semester', $this->current_semester)->get();
+
+        return $disciplines->map(function ($discipline) {
+            $studentDisciplineInfo = $this->disciplines()->where('discipline_id', $discipline->id)->first();
+
+            return [
+                'discipline_name' => $discipline->name,
+                'discipline_difficulty' => $discipline->difficulty->name,
+                'discipline_teacher' => $discipline->teacher->name,
+                'discipline_schedule' => [
+                    'weekday' => $discipline->schedule->weekday,
+                    'start_time' => $discipline->schedule->start_time,
+                    'end_time' => $discipline->schedule->end_time,
+                ],
+                'status' => $studentDisciplineInfo->status,
+                'final_grade' => $studentDisciplineInfo->final_grade
+            ];
+        });
     }
 }
