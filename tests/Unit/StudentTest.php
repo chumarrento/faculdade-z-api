@@ -45,4 +45,26 @@ class StudentTest extends TestCase
 
         $this->assertInstanceOf(Collection::class, $student->disciplines);
     }
+
+    /** @test */
+    public function itHasSupports()
+    {
+        $student = Student::factory()->create();
+
+        $this->assertInstanceOf(Collection::class, $student->supportContacts);
+    }
+
+    /** @test */
+    public function itCanAddAFeedbackOnSupport()
+    {
+        $student = Student::factory()->create();
+
+        $message = 'any_message';
+        $student->addFeedback($message);
+
+        $this->assertDatabaseHas('supports', [
+            'message' => $message,
+            'student_id' => $student->id
+        ]);
+    }
 }
