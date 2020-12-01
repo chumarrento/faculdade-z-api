@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Course;
 use App\Models\Difficulty;
 use App\Models\Discipline;
+use App\Models\Schedule;
 use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -62,5 +63,22 @@ class DisciplineTest extends TestCase
         $discipline = Discipline::factory()->create();
 
         $this->assertInstanceOf(Collection::class, $discipline->schedules);
+    }
+
+    /** @test */
+    public function itCanAddASchedule()
+    {
+        $discipline = Discipline::factory()->create();
+
+        $scheduleAttributes = Schedule::factory()->raw(['discipline_id' => $discipline->id]);
+
+        $discipline->addSchedule($scheduleAttributes);
+
+        $this->assertDatabaseHas('schedules', [
+            'weekday' => $scheduleAttributes['weekday'],
+            'start_time' => $scheduleAttributes['start_time'],
+            'end_time' => $scheduleAttributes['end_time'],
+            'discipline_id' => $discipline->id
+        ]);
     }
 }
