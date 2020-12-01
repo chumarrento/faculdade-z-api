@@ -55,4 +55,12 @@ class DisciplineTest extends TestCase
 
         $this->assertInstanceOf(Collection::class, $discipline->students);
     }
+
+    /** @test */
+    public function itHasSchedules()
+    {
+        $discipline = Discipline::factory()->create();
+
+        $this->assertInstanceOf(Collection::class, $discipline->schedules);
+    }
 }
