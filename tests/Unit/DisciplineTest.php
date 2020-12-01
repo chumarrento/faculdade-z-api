@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Course;
 use App\Models\Difficulty;
 use App\Models\Discipline;
+use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
@@ -31,7 +32,7 @@ class DisciplineTest extends TestCase
     }
 
     /** @test */
-    public function itHasACourse()
+    public function itHasCourses()
     {
         $discipline = Discipline::factory()
             ->hasAttached(
@@ -41,5 +42,17 @@ class DisciplineTest extends TestCase
             ->create();
 
         $this->assertInstanceOf(Collection::class, $discipline->courses);
+    }
+
+    /** @test */
+    public function itHasStudents()
+    {
+        $discipline = Discipline::factory()
+            ->has(
+                Student::factory()->count(1),
+            )
+            ->create();
+
+        $this->assertInstanceOf(Collection::class, $discipline->students);
     }
 }

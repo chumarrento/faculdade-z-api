@@ -3,8 +3,10 @@
 namespace Tests\Unit;
 
 use App\Models\Course;
+use App\Models\Discipline;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Tests\TestCase;
 
 class StudentTest extends TestCase
@@ -32,5 +34,15 @@ class StudentTest extends TestCase
         $student = Student::factory()->create();
 
         $this->assertInstanceOf(Course::class, $student->course);
+    }
+
+    /** @test */
+    public function itHasDisciplines()
+    {
+        $student = Student::factory()
+            ->has(Discipline::factory()->count(2))
+            ->create();
+
+        $this->assertInstanceOf(Collection::class, $student->disciplines);
     }
 }

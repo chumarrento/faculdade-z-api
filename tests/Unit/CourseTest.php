@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Course;
+use App\Models\Discipline;
 use Database\Seeders\CourseTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
@@ -42,5 +43,18 @@ class CourseTest extends TestCase
         $course = Course::factory()->create();
 
         $this->assertInstanceOf(Collection::class, $course->students);
+    }
+
+    /** @test */
+    public function itHasDisciplines()
+    {
+        $course = Course::factory()
+            ->hasAttached(
+                Discipline::factory()->count(1),
+                ['semester' => 1]
+            )
+            ->create();
+
+        $this->assertInstanceOf(Collection::class, $course->disciplines);
     }
 }
