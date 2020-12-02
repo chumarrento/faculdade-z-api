@@ -79,8 +79,8 @@ class Student extends Authenticatable
                     'start_time' => $discipline->schedule->start_time,
                     'end_time' => $discipline->schedule->end_time,
                 ],
-                'status' => $studentDisciplineInfo->status,
-                'final_grade' => $studentDisciplineInfo->final_grade
+                'status' => $studentDisciplineInfo->pivot->status,
+                'final_grade' => $studentDisciplineInfo->pivot->final_grade
             ];
         });
     }

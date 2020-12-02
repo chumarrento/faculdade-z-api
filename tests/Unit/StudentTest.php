@@ -87,8 +87,8 @@ class StudentTest extends TestCase
                     'start_time' => $discipline->schedule->start_time,
                     'end_time' => $discipline->schedule->end_time,
                 ],
-                'status' => $discipline->status,
-                'final_grade' => $discipline->final_grade
+                'status' => $discipline->pivot->status,
+                'final_grade' => $discipline->pivot->final_grade
             ];
         });
 
