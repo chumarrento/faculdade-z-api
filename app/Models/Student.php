@@ -65,10 +65,10 @@ class Student extends Authenticatable
 
     public function getCurrentSemesterInfo()
     {
-        $disciplines = $this->course->disciplines()->wherePivot('semester', $this->current_semester)->get();
+        $disciplines = $this->course->getDisciplinesBySemester($this->current_semester);
 
         return $disciplines->map(function ($discipline) {
-            $studentDisciplineInfo = $this->disciplines()->where('discipline_id', $discipline->id)->first();
+            $studentDisciplineInfo = $this->getStudentDisciplineInfo($discipline->id);
 
             return [
                 'discipline_name' => $discipline->name,
@@ -83,5 +83,10 @@ class Student extends Authenticatable
                 'final_grade' => $studentDisciplineInfo->final_grade
             ];
         });
+    }
+
+    public function getStudentDisciplineInfo(int $disciplineId): Discipline
+    {
+        return $this->disciplines()->where('discipline_id', $disciplineId)->first();
     }
 }

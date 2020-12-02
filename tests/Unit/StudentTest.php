@@ -105,4 +105,33 @@ class StudentTest extends TestCase
 
         $this->assertEquals($expected, $currentSemesterInfo);
     }
+
+    /** @test */
+    public function itCanLoadSpecificStudentDisciplineInfoWithCorrectValues()
+    {
+        $course = Course::factory()
+            ->hasAttached(Discipline::factory()
+                ->hasSchedules(1)
+                ->hasTeacher(1)
+                ->count(2),
+                ['semester' => 1]
+            )
+            ->create();
+        $disciplines = $course->disciplines;
+
+        $student = Student::factory()->create(['course_id' => $course->id, 'current_semester' => 1]);
+        $disciplines->each(function ($discipline) use ($student) {
+            $finalGrade = rand(0, 10);
+            $student->disciplines()->attach($discipline, [
+                'status' => $finalGrade > 7 ? 'Aprovado' : 'Reprovado',
+                'final_grade' => $finalGrade
+            ]);
+        });
+        $studentDisciplines = $student->disciplines;
+
+        $studentDisciplines->each(function ($discipline) use ($student) {
+            $studentDisciplineInfo = $student->getStudentDisciplineInfo($discipline->id);
+            $this->assertEquals($discipline, $studentDisciplineInfo);
+        });
+    }
 }

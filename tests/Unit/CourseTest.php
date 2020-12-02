@@ -57,4 +57,21 @@ class CourseTest extends TestCase
 
         $this->assertInstanceOf(Collection::class, $course->disciplines);
     }
+
+    /** @test */
+    public function itCanLoadDisciplinesBySemester()
+    {
+        $count = 2;
+        $semester = 1;
+        $course = Course::factory()
+            ->hasAttached(
+                Discipline::factory()->count($count),
+                ['semester' => $semester]
+            )
+            ->create();
+
+        $disciplines = $course->getDisciplinesBySemester($semester);
+        $this->assertEquals($count, $disciplines->count());
+        $this->assertInstanceOf(Collection::class, $disciplines);
+    }
 }

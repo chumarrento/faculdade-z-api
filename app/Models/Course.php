@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Course extends Model
 {
@@ -30,5 +31,10 @@ class Course extends Model
         ->withPivot('semester')
         ->withTimestamps();
 
+    }
+
+    public function getDisciplinesBySemester(int $semester): Collection
+    {
+        return $this->disciplines()->wherePivot('semester', $semester)->get();
     }
 }
