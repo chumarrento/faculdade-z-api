@@ -15,25 +15,14 @@ class StudentTest extends TestCase
     /** @test */
     public function loadCurrentSemesterInfoOfStudent()
     {
-        $course = Course::factory()
-            ->hasAttached(Discipline::factory()
-                ->hasSchedules(1)
-                ->hasTeacher(1)
-                ->count(2),
-                ['semester' => 1]
-            )
-            ->create();
-        $disciplines = $course->disciplines;
-
-        $student = Student::factory()->create(['course_id' => $course->id, 'current_semester' => 1]);
-        $student->disciplines()->sync($disciplines);
+        $student = $this->createStudentDisciplinesMock();
+        $disciplines = $student->disciplines;
 
         $this->actingAs($student);
 
         $response = $this->get('api/students/me/current-semester-info');
 
         $expected = $disciplines->map(function ($discipline) {
-            $studentDisciplineInfo = $discipline->students->first();
             return [
                 'discipline_name' => $discipline->name,
                 'discipline_difficulty' => $discipline->difficulty->name,
@@ -43,8 +32,8 @@ class StudentTest extends TestCase
                     'start_time' => $discipline->schedule->start_time,
                     'end_time' => $discipline->schedule->end_time,
                 ],
-                'status' => $studentDisciplineInfo->status,
-                'final_grade' => $studentDisciplineInfo->final_grade
+                'status' => $discipline->status,
+                'final_grade' => $discipline->final_grade
             ];
         });
 

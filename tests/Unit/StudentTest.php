@@ -72,23 +72,12 @@ class StudentTest extends TestCase
     /** @test */
     public function itCanLoadCurrentSemesterInfo()
     {
-        $course = Course::factory()
-            ->hasAttached(Discipline::factory()
-                ->hasSchedules(1)
-                ->hasTeacher(1)
-                ->count(2),
-                ['semester' => 1]
-            )
-            ->create();
-        $disciplines = $course->disciplines;
-
-        $student = Student::factory()->create(['course_id' => $course->id, 'current_semester' => 1]);
-        $student->disciplines()->sync($disciplines);
+        $student = $this->createStudentDisciplinesMock();
+        $disciplines = $student->disciplines;
 
         $currentSemesterInfo = $student->getCurrentSemesterInfo();
 
         $expected = $disciplines->map(function ($discipline) {
-            $studentDisciplineInfo = $discipline->students->first();
             return [
                 'discipline_name' => $discipline->name,
                 'discipline_difficulty' => $discipline->difficulty->name,
@@ -98,8 +87,8 @@ class StudentTest extends TestCase
                     'start_time' => $discipline->schedule->start_time,
                     'end_time' => $discipline->schedule->end_time,
                 ],
-                'status' => $studentDisciplineInfo->status,
-                'final_grade' => $studentDisciplineInfo->final_grade
+                'status' => $discipline->status,
+                'final_grade' => $discipline->final_grade
             ];
         });
 
@@ -109,24 +98,7 @@ class StudentTest extends TestCase
     /** @test */
     public function itCanLoadSpecificStudentDisciplineInfoWithCorrectValues()
     {
-        $course = Course::factory()
-            ->hasAttached(Discipline::factory()
-                ->hasSchedules(1)
-                ->hasTeacher(1)
-                ->count(2),
-                ['semester' => 1]
-            )
-            ->create();
-        $disciplines = $course->disciplines;
-
-        $student = Student::factory()->create(['course_id' => $course->id, 'current_semester' => 1]);
-        $disciplines->each(function ($discipline) use ($student) {
-            $finalGrade = rand(0, 10);
-            $student->disciplines()->attach($discipline, [
-                'status' => $finalGrade > 7 ? 'Aprovado' : 'Reprovado',
-                'final_grade' => $finalGrade
-            ]);
-        });
+        $student = $this->createStudentDisciplinesMock();
         $studentDisciplines = $student->disciplines;
 
         $studentDisciplines->each(function ($discipline) use ($student) {
