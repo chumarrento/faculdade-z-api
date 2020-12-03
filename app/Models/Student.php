@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Laravel\Passport\HasApiTokens;
 
 class Student extends Authenticatable
@@ -116,5 +117,11 @@ class Student extends Authenticatable
                 'final_grade' => $studentDisciplineInfo->pivot->final_grade
             ];
         });
+    }
+
+    public function createStudentToken()
+    {
+        $token = Str::random(50);
+        $this->studentTokens()->create(['token' => $token]);
     }
 }
