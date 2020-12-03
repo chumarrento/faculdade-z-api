@@ -63,6 +63,11 @@ class Student extends Authenticatable
         return $this->hasMany(Support::class, 'student_id', 'id');
     }
 
+    public function studentTokens()
+    {
+        return $this->hasMany(StudentToken::class, 'student_id', 'id');
+    }
+
     public function addFeedback(string $message): void
     {
         $this->supportContacts()->create([
