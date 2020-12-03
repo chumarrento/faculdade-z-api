@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Course;
 use App\Models\Discipline;
 use App\Models\Student;
+use App\Models\StudentToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
@@ -151,5 +152,31 @@ class StudentTest extends TestCase
         $student->createStudentToken();
 
         $this->assertDatabaseCount('student_tokens', 1);
+    }
+
+    /** @test */
+    public function itCanVerifyEmail()
+    {
+        $student = Student::factory()
+            ->hasStudentTokens(1)
+            ->create(['email_verified_at' => null]);
+        $studentToken = $student->studentTokens->first();
+
+        $verify = $student->verifyEmail($studentToken->token);
+
+        $this->assertTrue($verify);
+        $this->assertTrue($student->hasVerifiedEmail());
+    }
+
+    /** @test */
+    public function itCannotVerifyEmailWithInvalidToken()
+    {
+        $student = Student::factory()->create(['email_verified_at' => null]);
+        $studentToken = StudentToken::factory()->create(['used' => true, 'student_id' => $student->id]);
+
+        $verify = $student->verifyEmail($studentToken->token);
+
+        $this->assertNotTrue($verify);
+        $this->assertNotTrue($student->hasVerifiedEmail());
     }
 }

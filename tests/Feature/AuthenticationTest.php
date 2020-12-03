@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mail\SendEmailVerifyMail;
 use App\Models\Student;
+use App\Models\StudentToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -138,5 +139,26 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseCount('student_tokens', 0);
 
         Mail::assertNothingSent();
+    }
+
+    /** @test */
+    public function studentCanVerifyEmailWithToken()
+    {
+        $student = Student::factory()->create(['email_verified_at' => null]);
+        $this->actingAs($student);
+
+        $studentToken = StudentToken::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->getJson("/api/students/me/verify-email/$studentToken->token");
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseHas('student_tokens', [
+            'token' => $studentToken->token,
+            'used' => true,
+            'student_id' => $student->id
+        ]);
+
+        $this->assertNotTrue(is_null($student->email_verified_at));
     }
 }
