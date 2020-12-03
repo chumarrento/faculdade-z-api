@@ -122,4 +122,21 @@ class AuthenticationTest extends TestCase
 
         Mail::assertSent(SendEmailVerifyMail::class);
     }
+
+    /** @test */
+    public function studentCannotSendEmailVerificationIfEmailIsVerified()
+    {
+        Mail::fake();
+
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $response = $this->getJson('/api/students/me/send-email-verification');
+
+        $response->assertStatus(400);
+
+        $this->assertDatabaseCount('student_tokens', 0);
+
+        Mail::assertNothingSent();
+    }
 }
