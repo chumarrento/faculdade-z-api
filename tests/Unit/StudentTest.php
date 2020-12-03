@@ -134,4 +134,12 @@ class StudentTest extends TestCase
 
         $this->assertTrue(Hash::check('valid_password', $user->password));
     }
+
+    /** @test */
+    public function itHasTokens()
+    {
+        $student = Student::factory()->create();
+
+        $this->assertInstanceOf(Collection::class, $student->studentTokens);
+    }
 }
