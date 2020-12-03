@@ -52,4 +52,10 @@ class MeController extends Controller
 
         return $this->noContent();
     }
+
+    public function sendEmailVerification()
+    {
+        Auth::user()->createStudentToken();
+        return $this->noContent();
+    }
 }
