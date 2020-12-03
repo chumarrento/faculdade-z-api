@@ -40,4 +40,28 @@ abstract class TestCase extends BaseTestCase
 
         return $student;
     }
+
+    public function createStudentSchoolRecordMock():  Student
+    {
+        $course = Course::factory()->create();
+        $currentStudentSemester = rand(1, 8);
+
+        $student = Student::factory()->create([
+            'current_semester' => $currentStudentSemester,
+            'course_id' => $course->id
+        ]);
+
+        for ($i = 0; $i < $currentStudentSemester; $i++) {
+            $discipline = Discipline::factory()->create();
+            $course->disciplines()->attach($discipline, ['semester' => $i]);
+
+            $finalGrade = rand(0, 10);
+            $student->disciplines()->attach($discipline, [
+                'status' => $finalGrade > 7 ? 'Aprovado' : 'Reprovado',
+                'final_grade' => $finalGrade
+            ]);
+        }
+
+        return $student;
+    }
 }
