@@ -37,4 +37,9 @@ class Course extends Model
     {
         return $this->disciplines()->wherePivot('semester', $semester)->get();
     }
+
+    public function getPreviousDisciplinesBySemester(int $semester): Collection
+    {
+        return $this->disciplines()->wherePivot('semester', '<=' , $semester)->get();
+    }
 }

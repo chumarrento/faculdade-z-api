@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Collection;
 use Laravel\Passport\HasApiTokens;
 
 class Student extends Authenticatable
@@ -63,7 +64,7 @@ class Student extends Authenticatable
         ]);
     }
 
-    public function getCurrentSemesterInfo()
+    public function getCurrentSemesterInfo(): Collection
     {
         $disciplines = $this->course->getDisciplinesBySemester($this->current_semester);
 
@@ -88,5 +89,21 @@ class Student extends Authenticatable
     public function getStudentDisciplineInfo(int $disciplineId): Discipline
     {
         return $this->disciplines()->where('discipline_id', $disciplineId)->first();
+    }
+
+    public function getSchoolRecord(): Collection
+    {
+        $disciplinesTaken = $this->course->getPreviousDisciplinesBySemester($this->current_semester);
+
+        return $disciplinesTaken->map(function ($discipline) {
+            $studentDisciplineInfo = $this->getStudentDisciplineInfo($discipline->id);
+
+            return [
+                'discipline_name' => $discipline->name,
+                'discipline_teacher' => $discipline->teacher->name,
+                'status' => $studentDisciplineInfo->pivot->status,
+                'final_grade' => $studentDisciplineInfo->pivot->final_grade
+            ];
+        });
     }
 }

@@ -16,4 +16,10 @@ class MeController extends Controller
         $currentSemesterInfo = Auth::user()->getCurrentSemesterInfo();
         return $this->success($currentSemesterInfo);
     }
+
+    public function getSchoolRecords()
+    {
+        $schoolRecords = Auth::user()->getSchoolRecord();
+        return $this->success($schoolRecords);
+    }
 }
