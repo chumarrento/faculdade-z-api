@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Students;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StudentUpdateRequest;
 use App\Utils\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class MeController extends Controller
@@ -23,7 +23,7 @@ class MeController extends Controller
         return $this->success($schoolRecords);
     }
 
-    public function update(Request $request)
+    public function update(StudentUpdateRequest $request)
     {
         $attributes = $request->only(['name','email', 'cpf']);
 
