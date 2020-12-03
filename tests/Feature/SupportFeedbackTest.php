@@ -28,4 +28,26 @@ class SupportFeedbackTest extends TestCase
             'student_id' => $student->id
         ]);
     }
+
+    /** @test */
+    public function feedbackRequiresAMessage()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $this->json('POST', '/api/feedback', [
+            'message' => ''
+        ])->assertJsonValidationErrors('message');
+    }
+
+    /** @test */
+    public function feedbackRequiresAStringMessage()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $this->json('POST', '/api/feedback', [
+            'message' => 1234
+        ])->assertJsonValidationErrors('message');
+    }
 }
