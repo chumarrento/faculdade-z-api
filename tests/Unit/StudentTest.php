@@ -142,4 +142,14 @@ class StudentTest extends TestCase
 
         $this->assertInstanceOf(Collection::class, $student->studentTokens);
     }
+
+    /** @test */
+    public function itCanCreateToken()
+    {
+        $student = Student::factory()->create();
+
+        $student->createStudentToken();
+
+        $this->assertDatabaseCount('student_tokens', 1);
+    }
 }
