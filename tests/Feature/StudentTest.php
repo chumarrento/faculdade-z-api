@@ -90,4 +90,78 @@ class StudentTest extends TestCase
             'course_id' => $student->course_id
         ]);
     }
+
+    /** @test */
+    public function aStudentUpdateRequiresAStringCpf()
+    {
+        $this->actingAs(Student::factory()->create());
+        $response = $this->json('PUT', 'api/students/me', [
+            'cpf' => 1234,
+            'email' => 'any_email@email.com',
+            'name' => 'any_name'
+        ])->assertJsonValidationErrors('cpf');
+    }
+
+    /** @test */
+    public function aStudentUpdateRequiresAValidCpfSize()
+    {
+        $this->actingAs(Student::factory()->create());
+        $this->json('PUT', 'api/students/me', [
+            'cpf' => 'invalid_cpf_size',
+            'email' => 'any_email@email.com',
+            'name' => 'any_name'
+        ])->assertJsonValidationErrors('cpf');
+    }
+
+    /** @test */
+    public function aStudentUpdateRequiresAUniqueCpf()
+    {
+        $otherStudent = Student::factory()->create();
+        $this->actingAs(Student::factory()->create());
+
+        $this->json('PUT', 'api/students/me', [
+            'cpf' => $otherStudent->cpf,
+            'email' => 'any_email@email.com',
+            'name' => 'any_name'
+        ])->assertJsonValidationErrors('cpf');
+    }
+
+    /** @test */
+    public function aStudentUpdateRequiresAValidEmail()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+        $this->json('PUT', 'api/students/me', [
+            'cpf' => $student->cpf,
+            'email' => 'invalid_email',
+            'name' => 'any_name'
+        ])->assertJsonValidationErrors('email');
+    }
+
+    /** @test */
+    public function aStudentUpdateRequiresAUniqueEmail()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $otherStudent = Student::factory()->create();
+
+        $this->json('PUT', 'api/students/me', [
+            'cpf' => $student->cpf,
+            'email' => $otherStudent->email,
+            'name' => 'any_name'
+        ])->assertJsonValidationErrors('email');
+    }
+
+    /** @test */
+    public function aStudentUpdateRequiresAStringName()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+        $this->json('PUT', 'api/students/me', [
+            'cpf' => $student->cpf,
+            'email' => 'any_email@email.com',
+            'name' => 123
+        ])->assertJsonValidationErrors('name');
+    }
 }
