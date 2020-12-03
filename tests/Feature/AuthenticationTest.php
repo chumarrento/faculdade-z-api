@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Mail\SendEmailVerifyMail;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -102,5 +104,22 @@ class AuthenticationTest extends TestCase
             'cpf' => 'any_cpf',
             'password' => 1234
         ])->assertJsonValidationErrors('password');
+    }
+
+    /** @test */
+    public function studentCanSendEmailVerification()
+    {
+        Mail::fake();
+
+        $student = Student::factory()->create(['email_verified_at' => null]);
+        $this->actingAs($student);
+
+        $response = $this->getJson('/api/students/me/send-email-verification');
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseCount('student_tokens', 1);
+
+        Mail::assertSent(SendEmailVerifyMail::class);
     }
 }
