@@ -68,7 +68,11 @@ class MeController extends Controller
 
     public function verifyEmailWithToken($token)
     {
-        Auth::user()->verifyEmail($token);
+        $verify = Auth::user()->verifyEmail($token);
+
+        if (!$verify) {
+            return $this->bad();
+        }
 
         return $this->noContent();
     }
