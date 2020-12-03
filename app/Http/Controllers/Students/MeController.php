@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Students;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StudentChangePasswordRequest;
 use App\Http\Requests\StudentUpdateRequest;
 use App\Utils\ApiResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -39,7 +39,7 @@ class MeController extends Controller
         return $this->noContent();
     }
 
-    public function changePassword(Request $request)
+    public function changePassword(StudentChangePasswordRequest $request)
     {
         $user = Auth::user();
 
