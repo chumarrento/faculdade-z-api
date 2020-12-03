@@ -167,7 +167,7 @@ class StudentTest extends TestCase
     }
 
     /** @test */
-    public function studentCanUpdateYourPassword()
+    public function studentCanChangeYourPassword()
     {
         $student = Student::factory()->create();
         $this->actingAs($student);
@@ -182,5 +182,70 @@ class StudentTest extends TestCase
 
         $response->assertStatus(204);
         $this->assertTrue(Hash::check('new_password', $student->password));
+    }
+
+    /** @test */
+    public function aStudentChangeRequiresAOldPassword()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $this->json('PUT', 'api/students/me/change-password', [
+            'old_password' => '',
+            'new_password' => 'new_valid_password',
+            'new_password_confirmation' => 'new_valid_password'
+        ])->assertJsonValidationErrors('old_password');
+    }
+
+    /** @test */
+    public function aStudentChangeRequiresAStringOldPassword()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $this->json('PUT', 'api/students/me/change-password', [
+            'old_password' => 1234,
+            'new_password' => 'new_valid_password',
+            'new_password_confirmation' => 'new_valid_password'
+        ])->assertJsonValidationErrors('old_password');
+    }
+
+    /** @test */
+    public function aStudentChangeRequiresANewPassword()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $this->json('PUT', 'api/students/me/change-password', [
+            'old_password' => 'password',
+            'new_password' => '',
+            'new_password_confirmation' => ''
+        ])->assertJsonValidationErrors('new_password');
+    }
+
+    /** @test */
+    public function aStudentChangeRequiresAStringNewPassword()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $this->json('PUT', 'api/students/me/change-password', [
+            'old_password' => 'password',
+            'new_password' => 1234,
+            'new_password_confirmation' => 1234
+        ])->assertJsonValidationErrors('new_password');
+    }
+
+    /** @test */
+    public function aStudentChangeRequiresAConfirmedNewPassword()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $this->json('PUT', 'api/students/me/change-password', [
+            'old_password' => 'password',
+            'new_password' => 'new_valid_password',
+            'new_password_confirmation' => 'incorrect_new_password'
+        ])->assertJsonValidationErrors('new_password');
     }
 }
