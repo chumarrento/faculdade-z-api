@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Students\MeController;
+use App\Http\Controllers\Support\SupportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,4 +25,6 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::put('me', [MeController::class, 'update']);
         Route::put('me/change-password', [MeController::class, 'changePassword']);
     });
+
+    Route::post('feedback', [SupportController::class, 'create']);
 });
