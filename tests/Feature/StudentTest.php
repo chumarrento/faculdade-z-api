@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class StudentTest extends TestCase
@@ -163,5 +164,23 @@ class StudentTest extends TestCase
             'email' => 'any_email@email.com',
             'name' => 123
         ])->assertJsonValidationErrors('name');
+    }
+
+    /** @test */
+    public function studentCanUpdateYourPassword()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+
+        $attributes = Student::factory()->raw(['password' => 'new_password']);
+
+        $response = $this->json('PUT', 'api/students/me/change-password', [
+            'old_password' => 'password',
+            'new_password' => $attributes['password'],
+            'new_password_confirmation' => $attributes['password']
+        ]);
+
+        $response->assertStatus(204);
+        $this->assertTrue(Hash::check('new_password', $student->password));
     }
 }

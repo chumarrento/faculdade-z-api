@@ -7,6 +7,7 @@ use App\Models\Discipline;
 use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class StudentTest extends TestCase
@@ -124,5 +125,13 @@ class StudentTest extends TestCase
         });
 
         $this->assertEquals($expected, $schoolRecords);
+    }
+
+    /** @test */
+    public function itHasAEncryptedPassword()
+    {
+        $user = Student::factory()->create(['password' => 'valid_password']);
+
+        $this->assertTrue(Hash::check('valid_password', $user->password));
     }
 }
