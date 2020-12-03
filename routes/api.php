@@ -21,5 +21,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::group(['prefix' => 'students'], function () {
         Route::get('me/current-semester-info', [MeController::class, 'getCurrentSemesterInfo']);
         Route::get('me/school-records', [MeController::class, 'getSchoolRecords']);
+        Route::put('/me', [MeController::class, 'update']);
     });
 });
