@@ -174,4 +174,18 @@ class AuthenticationTest extends TestCase
 
         $this->assertTrue(is_null($student->email_verified_at));
     }
+
+    /** @test */
+    public function studentCannotVerifyEmailIfThereAreVerified()
+    {
+        $student = Student::factory()->create();
+        $this->actingAs($student);
+        $studentToken = StudentToken::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->getJson("/api/students/me/verify-email/$studentToken->token");
+
+        $response->assertStatus(400);
+
+        $this->assertNotTrue(is_null($student->email_verified_at));
+    }
 }
