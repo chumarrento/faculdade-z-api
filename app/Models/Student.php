@@ -124,4 +124,22 @@ class Student extends Authenticatable
         $token = Str::random(50);
         $this->studentTokens()->create(['token' => $token]);
     }
+
+    public function verifyEmail(string $token)
+    {
+        $studentToken = $this->studentTokens()->where([
+            ['token', '=', $token],
+            ['used', '=', false],
+            ['expired', '=', false]
+        ])->first();
+
+        if (!$studentToken) {
+            return false;
+        }
+
+        $this->markEmailAsVerified();
+        $studentToken->update(['used' => true]);
+
+        return true;
+    }
 }

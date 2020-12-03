@@ -56,12 +56,19 @@ class MeController extends Controller
     public function sendEmailVerification()
     {
         $user = Auth::user();
-        
+
         if (!is_null($user->email_verified_at)) {
             return $this->bad();
         }
 
         $user->createStudentToken();
+
+        return $this->noContent();
+    }
+
+    public function verifyEmailWithToken($token)
+    {
+        Auth::user()->verifyEmail($token);
 
         return $this->noContent();
     }

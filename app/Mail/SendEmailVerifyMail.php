@@ -30,7 +30,7 @@ class SendEmailVerifyMail extends Mailable
      */
     public function __construct(StudentToken $studentToken, Student $student)
     {
-        $this->$studentToken = $studentToken;
+        $this->studentToken = $studentToken;
         $this->student = $student;
     }
 
