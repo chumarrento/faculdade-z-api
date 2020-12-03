@@ -27,7 +27,7 @@ class MeController extends Controller
 
     public function update(StudentUpdateRequest $request)
     {
-        $attributes = $request->only(['name','email', 'cpf']);
+        $attributes = $request->only(['name', 'email', 'cpf']);
 
         $user = Auth::user();
         if (array_key_exists('email', $attributes) && $user->email !== $attributes['email']) {
@@ -55,7 +55,14 @@ class MeController extends Controller
 
     public function sendEmailVerification()
     {
-        Auth::user()->createStudentToken();
+        $user = Auth::user();
+        
+        if (!is_null($user->email_verified_at)) {
+            return $this->bad();
+        }
+
+        $user->createStudentToken();
+
         return $this->noContent();
     }
 }
