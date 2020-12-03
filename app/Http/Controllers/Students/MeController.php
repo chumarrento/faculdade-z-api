@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Students;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentUpdateRequest;
 use App\Utils\ApiResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class MeController extends Controller
 {
@@ -32,6 +34,20 @@ class MeController extends Controller
             $attributes['email_verified_at'] = null;
         }
 
+        Auth::user()->update($attributes);
+
+        return $this->noContent();
+    }
+
+    public function changePassword(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!Hash::check($request->post('old_password'), $user->password)) {
+            return $this->unauthorized(['message' => 'Senha inválida']);
+        }
+
+        $attributes['password'] = $request->post('new_password');
         Auth::user()->update($attributes);
 
         return $this->noContent();
