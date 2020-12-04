@@ -37,6 +37,10 @@ class MeController extends Controller
         $pdf = storage_path() . "/school-records/Historico_$student->registration.pdf";
 
         if (request()->query('email')) {
+            if (!$student->hasVerifiedEmail()) {
+                Storage::delete($pdf);
+                return $this->bad();
+            }
             Mail::to($student)->send((new SendSchoolRecordsReportMail($student, $pdf)));
 
             Storage::delete($pdf);
