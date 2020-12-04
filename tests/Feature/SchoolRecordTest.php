@@ -51,7 +51,7 @@ class SchoolRecordTest extends TestCase
     }
 
     /** @test */
-    public function studentReceiveYourSchoolRecordsOnEmail()
+    public function studentCanReceiveYourSchoolRecordsOnEmail()
     {
         Mail::fake();
 
@@ -63,5 +63,20 @@ class SchoolRecordTest extends TestCase
 
 
         Mail::assertSent(SendSchoolRecordsReportMail::class);
+    }
+
+    /** @test */
+    public function studentCannotReceiveYourSchoolRecordsOnEmailIfThereAreNotVerified()
+    {
+        Mail::fake();
+
+        $student = $this->createStudentSchoolRecordMock(false);
+
+        $this->actingAs($student);
+
+        $this->get('/api/students/me/school-records/report?email=true')->assertStatus(400);
+
+
+        Mail::assertNotSent(SendSchoolRecordsReportMail::class);
     }
 }

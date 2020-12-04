@@ -41,14 +41,15 @@ abstract class TestCase extends BaseTestCase
         return $student;
     }
 
-    public function createStudentSchoolRecordMock():  Student
+    public function createStudentSchoolRecordMock(bool $emailVerified = true):  Student
     {
         $course = Course::factory()->create();
         $currentStudentSemester = rand(1, 8);
 
         $student = Student::factory()->create([
             'current_semester' => $currentStudentSemester,
-            'course_id' => $course->id
+            'course_id' => $course->id,
+            'email_verified_at' => $emailVerified ? now() : null
         ]);
 
         for ($i = 0; $i < $currentStudentSemester; $i++) {
