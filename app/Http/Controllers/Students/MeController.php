@@ -6,9 +6,12 @@ use App\Exports\SchoolRecordReport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentChangePasswordRequest;
 use App\Http\Requests\StudentUpdateRequest;
+use App\Mail\SendSchoolRecordsReportMail;
 use App\Utils\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class MeController extends Controller
 {
@@ -32,6 +35,13 @@ class MeController extends Controller
         $schoolRecords = $student->getSchoolRecord();
         (new SchoolRecordReport())->handle($student, $schoolRecords);
         $pdf = storage_path() . "/school-records/Historico_$student->registration.pdf";
+
+        if (request()->query('email')) {
+            Mail::to($student)->send((new SendSchoolRecordsReportMail($student, $pdf)));
+
+            Storage::delete($pdf);
+            return $this->noContent();
+        }
 
         return response()->download($pdf)->deleteFileAfterSend(true);
     }
