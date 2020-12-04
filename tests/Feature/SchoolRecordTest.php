@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Mail\SendSchoolRecordsReportMail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class SchoolRecordTest extends TestCase
@@ -46,5 +48,20 @@ class SchoolRecordTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/pdf');
         $response->assertHeader('Content-Disposition', "attachment; filename=$expectedFileName");
+    }
+
+    /** @test */
+    public function studentReceiveYourSchoolRecordsOnEmail()
+    {
+        Mail::fake();
+
+        $student = $this->createStudentSchoolRecordMock();
+
+        $this->actingAs($student);
+
+        $this->get('/api/students/me/school-records/report?email=true')->assertStatus(204);
+
+
+        Mail::assertSent(SendSchoolRecordsReportMail::class);
     }
 }
