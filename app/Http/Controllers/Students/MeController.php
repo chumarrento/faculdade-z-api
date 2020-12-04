@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Students;
 
+use App\Exports\SchoolRecordReport;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StudentChangePasswordRequest;
 use App\Http\Requests\StudentUpdateRequest;
@@ -23,6 +24,16 @@ class MeController extends Controller
     {
         $schoolRecords = Auth::user()->getSchoolRecord();
         return $this->success($schoolRecords);
+    }
+
+    public function getSchoolRecordsReport()
+    {
+        $student = Auth::user();
+        $schoolRecords = $student->getSchoolRecord();
+        (new SchoolRecordReport())->handle($student, $schoolRecords);
+        $pdf = storage_path() . "/school-records/Historico_$student->registration.pdf";
+
+        return response()->download($pdf)->deleteFileAfterSend(true);
     }
 
     public function update(StudentUpdateRequest $request)
@@ -77,6 +88,5 @@ class MeController extends Controller
             }
         }
         return $this->bad();
-
     }
 }

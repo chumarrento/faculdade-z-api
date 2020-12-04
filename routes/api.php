@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::get('me/verify-email/{token}', [MeController::class, 'verifyEmailWithToken']);
         Route::get('me/current-semester-info', [MeController::class, 'getCurrentSemesterInfo']);
         Route::get('me/school-records', [MeController::class, 'getSchoolRecords']);
+        Route::get('me/school-records/report', [MeController::class, 'getSchoolRecordsReport']);
         Route::put('me', [MeController::class, 'update']);
         Route::put('me/change-password', [MeController::class, 'changePassword']);
     });
