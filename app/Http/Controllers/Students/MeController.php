@@ -31,23 +31,28 @@ class MeController extends Controller
 
     public function getSchoolRecordsReport()
     {
-        $student = Auth::user();
-        $schoolRecords = $student->getSchoolRecord();
-        (new SchoolRecordReport())->handle($student, $schoolRecords);
-        $pdf = storage_path() . "/school-records/Historico_$student->registration.pdf";
+        try {
+            $student = Auth::user();
+            $schoolRecords = $student->getSchoolRecord();
+            (new SchoolRecordReport())->handle($student, $schoolRecords);
+            $pdf = storage_path() . "/school-records/Historico_$student->registration.pdf";
 
-        if (request()->query('email')) {
-            if (!$student->hasVerifiedEmail()) {
+            if (request()->query('email')) {
+                if (!$student->hasVerifiedEmail()) {
+                    Storage::delete($pdf);
+                    return $this->bad();
+                }
+                Mail::to($student)->send((new SendSchoolRecordsReportMail($student, $pdf)));
+
                 Storage::delete($pdf);
-                return $this->bad();
+                return $this->noContent();
             }
-            Mail::to($student)->send((new SendSchoolRecordsReportMail($student, $pdf)));
 
+            return response()->download($pdf)->deleteFileAfterSend(true);
+        } catch (\Exception $exception) {
             Storage::delete($pdf);
-            return $this->noContent();
+            return $this->internalError(['message' => 'Ocorreu um erro ao enviar o email ou criar o arquivo.']);
         }
-
-        return response()->download($pdf)->deleteFileAfterSend(true);
     }
 
     public function update(StudentUpdateRequest $request)
