@@ -2,9 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Course;
-use App\Models\Discipline;
-use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,5 +31,20 @@ class SchoolRecordTest extends TestCase
         });
 
         $response->assertJson($expected->toArray());
+    }
+
+    /** @test */
+    public function studentDownloadYourSchoolRecords()
+    {
+        $student = $this->createStudentSchoolRecordMock();
+
+        $this->actingAs($student);
+
+        $response = $this->get('/api/students/me/school-records/report');
+        $expectedFileName = "Historico_$student->registration.pdf";
+
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/pdf');
+        $response->assertHeader('Content-Disposition', "attachment; filename=$expectedFileName");
     }
 }
