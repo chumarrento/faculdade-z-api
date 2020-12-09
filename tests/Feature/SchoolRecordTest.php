@@ -22,18 +22,21 @@ class SchoolRecordTest extends TestCase
         $response = $this->get('/api/students/me/school-records');
 
         $response->assertStatus(200);
-        $disciplines = $student->disciplines;
-
-        $expected = $disciplines->map(function ($discipline) {
-            return [
-                'discipline_name' => $discipline->name,
-                'discipline_teacher' => $discipline->teacher->name,
-                'status' => $discipline->pivot->status,
-                'final_grade' => $discipline->pivot->final_grade
-            ];
-        });
-
-        $response->assertJson($expected->toArray());
+        
+        $response->assertJsonStructure([
+            '*' => [
+                'semester',
+                'disciplines' => [
+                    '*' => [
+                        'discipline_name',
+                        'discipline_teacher',
+                        'semester',
+                        'status',
+                        'final_grade'
+                    ]
+                ]
+            ]
+        ]);
     }
 
     /** @test */
@@ -93,6 +96,6 @@ class SchoolRecordTest extends TestCase
         $response = $this->get('/api/students/me/school-records/report?email=true')->assertStatus(500);
         $response->assertJson(['message' => 'Ocorreu um erro ao enviar o email ou criar o arquivo.']);
 
-        $this->assertFileDoesNotExist(storage_path(). 'school-records/Historico_' . $student->registration . '.pdf');
+        $this->assertFileDoesNotExist(storage_path() . 'school-records/Historico_' . $student->registration . '.pdf');
     }
 }

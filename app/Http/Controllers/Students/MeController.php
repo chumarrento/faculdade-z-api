@@ -25,7 +25,7 @@ class MeController extends Controller
 
     public function getSchoolRecords()
     {
-        $schoolRecords = Auth::user()->getSchoolRecord();
+        $schoolRecords = Auth::user()->getSchoolRecordGroupedBySemester();
         return $this->success($schoolRecords);
     }
 

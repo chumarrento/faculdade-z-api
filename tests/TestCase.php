@@ -52,7 +52,7 @@ abstract class TestCase extends BaseTestCase
             'email_verified_at' => $emailVerified ? now() : null
         ]);
 
-        for ($i = 0; $i < $currentStudentSemester; $i++) {
+        for ($i = 1; $i <= $currentStudentSemester; $i++) {
             $discipline = Discipline::factory()->create();
             $course->disciplines()->attach($discipline, ['semester' => $i]);
 

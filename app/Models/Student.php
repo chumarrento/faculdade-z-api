@@ -113,10 +113,24 @@ class Student extends Authenticatable
             return [
                 'discipline_name' => $discipline->name,
                 'discipline_teacher' => $discipline->teacher->name,
+                'semester' => $discipline->pivot->semester,
                 'status' => $studentDisciplineInfo->pivot->status,
                 'final_grade' => $studentDisciplineInfo->pivot->final_grade
             ];
         });
+    }
+
+    public function getSchoolRecordGroupedBySemester(): array
+    {
+        $groupedSchoolRecords = $this->getSchoolRecord()->groupBy('semester');
+        $data = [];
+        foreach ($groupedSchoolRecords as $key => $value) {
+            $data[] = [
+                'semester' => $key,
+                'disciplines' => $value
+            ];
+        }
+        return $data;
     }
 
     public function createStudentToken()

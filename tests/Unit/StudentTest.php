@@ -115,13 +115,16 @@ class StudentTest extends TestCase
         $student = $this->createStudentSchoolRecordMock();
 
         $schoolRecords = $student->getSchoolRecord();
-        $disciplines = $student->disciplines;
-        $expected = $disciplines->map(function ($discipline) {
+        $disciplines = $student->course->disciplines;
+
+        $expected = $disciplines->map(function ($discipline) use ($student){
+            $studentDisciplineInfo = $student->getStudentDisciplineInfo($discipline->id);
             return [
                 'discipline_name' => $discipline->name,
                 'discipline_teacher' => $discipline->teacher->name,
-                'status' => $discipline->pivot->status,
-                'final_grade' => $discipline->pivot->final_grade
+                'semester' => $discipline->pivot->semester,
+                'status' => $studentDisciplineInfo->pivot->status,
+                'final_grade' => $studentDisciplineInfo->pivot->final_grade
             ];
         });
 
@@ -178,5 +181,21 @@ class StudentTest extends TestCase
 
         $this->assertNotTrue($verify);
         $this->assertNotTrue($student->hasVerifiedEmail());
+    }
+
+    /** @test */
+    public function itCanLoadSchoolRecordGroupBySemester()
+    {
+        $student = $this->createStudentSchoolRecordMock();
+
+        $schoolRecords = $student->getSchoolRecordGroupedBySemester();
+        $disciplinesExpected = $student->disciplines;
+
+        $this->assertEquals($student->current_semester, count($schoolRecords));
+
+        $disciplines = array_map(function ($schoolRecord) {
+            return $schoolRecord['disciplines'];
+        }, $schoolRecords);
+        $this->assertCount($disciplinesExpected->count(), $disciplines);
     }
 }
