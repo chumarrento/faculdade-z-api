@@ -22,7 +22,7 @@ class SchoolRecordTest extends TestCase
         $response = $this->get('/api/students/me/school-records');
 
         $response->assertStatus(200);
-        
+
         $response->assertJsonStructure([
             '*' => [
                 'semester',
@@ -81,21 +81,5 @@ class SchoolRecordTest extends TestCase
         $this->get('/api/students/me/school-records/report?email=true')->assertStatus(400);
 
         Mail::assertNotSent(SendSchoolRecordsReportMail::class);
-    }
-
-    /** @test */
-    public function studentReceivedErrorIfMailableThrows()
-    {
-        $mock = $this->createMock(SendSchoolRecordsReportMail::class);
-        $mock->method('build')->willThrowException(new \Exception());
-
-        $student = $this->createStudentSchoolRecordMock();
-
-        $this->actingAs($student);
-
-        $response = $this->get('/api/students/me/school-records/report?email=true')->assertStatus(500);
-        $response->assertJson(['message' => 'Ocorreu um erro ao enviar o email ou criar o arquivo.']);
-
-        $this->assertFileDoesNotExist(storage_path() . 'school-records/Historico_' . $student->registration . '.pdf');
     }
 }

@@ -37,8 +37,8 @@ class SendSchoolRecordsReportMail extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.school-records')
+        return $this->view('emails.email-school-records')
             ->with(['student' => $this->student])
-            ->attachFromStorage($this->file);
+            ->attach($this->file);
     }
 }
