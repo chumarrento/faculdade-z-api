@@ -74,7 +74,7 @@ class MeController extends Controller
         $user = Auth::user();
 
         if (!Hash::check($request->post('old_password'), $user->password)) {
-            return $this->unauthorized(['message' => 'Senha inválida']);
+            return $this->bad(['message' => 'Senha atual inválida']);
         }
 
         $attributes['password'] = $request->post('new_password');
