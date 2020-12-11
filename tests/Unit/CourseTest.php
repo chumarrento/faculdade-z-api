@@ -26,18 +26,6 @@ class CourseTest extends TestCase
     }
 
     /** @test */
-    public function checkIfSeederRegisterCorrectValues()
-    {
-        $this->seed(CourseTableSeeder::class);
-
-        $this->assertDatabaseHas('courses', [
-            'id' => 1,
-            'name' => 'Sistemas de Informação',
-            'semesters' => 8
-        ]);
-    }
-
-    /** @test */
     public function itHasStudents()
     {
         $course = Course::factory()->create();
