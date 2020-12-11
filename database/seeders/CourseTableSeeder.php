@@ -14,6 +14,8 @@ class CourseTableSeeder extends Seeder
      */
     public function run()
     {
+        Course::truncate();
+
         Course::create([
             'name' => 'Sistemas de Informação',
             'semesters' => 8
